@@ -1,12 +1,12 @@
 <template>
   <div class="home">
     <div class="blockLib border-black border-l h-screen  w-48">
-      <block-lib-com @dragstart="startDrag($event)"></block-lib-com>
+      <block-lib-com v-for="(block, index) in blocks" :key="index" :id="'darg' + block" @dragstart="startDrag($event)"></block-lib-com>
     </div>
     <!-- <div @drop="drop($event)" @dragover.prevent @dragenter.prevent class="normal"></div>
     <div @drop="drop($event)" @dragover.prevent @dragenter.prevent class="small"></div> -->
     <div>
-      <div class=" z-10" v-for="dropZone in dropZones" :key="dropZone.id" :class="dropZone.type" @drop="drop($event)" @dragover.prevent @dragenter="dragEnter($event)" @dragleave="dragLeave($event)"></div>
+      <div class=" z-10" v-for="dropZone in dropZones" :key="dropZone.id" :class="dropZone.type" @drop="drop($event)" @dragleave="dragLeave($event)" @dragover.prevent @dragenter=dragEnter($event)></div>
     </div>
     </div>
 </template>
@@ -22,6 +22,10 @@ export default {
       dropZones:[
         {type:'small', id:1},
         {type:'normal', id:2}
+      ],
+      blocks:[
+        1,
+        2,
       ]
     }
   },
@@ -45,6 +49,7 @@ export default {
       dragElement.classList.add('editBlock')
       console.log(data, evt.target)
       evt.target.appendChild(document.getElementById(data))
+      evt.target.classList.remove('showDrop')
     },
     showDrop(evt){
       evt.target.classList.add('.showDrop')
@@ -68,14 +73,13 @@ flex-direction: row-reverse;
   height: 400px;
   position: relative;
   z-index: 99;
-  background: rgba($color: #000000, $alpha: 0.1);
 }
 .small{
   width: 100vw;
   height: 200px;
   position: relative;
   z-index: 99;
-  background: rgba($color: #000000, $alpha: 0.1);
+
 }
 .showDrop{
   border: dashed rgba($color: #000000, $alpha: 0.8) 1px;
