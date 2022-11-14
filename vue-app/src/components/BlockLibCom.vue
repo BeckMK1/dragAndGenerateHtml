@@ -1,5 +1,5 @@
 <template>
-    <div class="block1 libBlock w-screen h-full bg-black ml-auto mr-auto mt-3 drag" :id="id">
+    <div class="block1 libBlock w-screen h-full bg-black ml-auto mr-auto drag" draggable="true" :id="id">
         <div class="blockNav hideNav" > 
           <i class="deleteBtn fa-solid fa-xmark"></i>
         </div>
@@ -21,8 +21,6 @@ export default {
 
 <style lang="scss" scoped>
 .block1{
-  position: relative;
-  z-index: 99;
   &:hover .showNav{
 display: block;
 }
@@ -34,6 +32,7 @@ display: none;
 width: 150px !important;
 height: 100px !important;
 position: relative;
+margin-top: 16px;
 }
 .hideNav{
   display: none;

@@ -1,12 +1,12 @@
 <template>
   <div class="home">
-    <div class="blockLib border-black border-l h-screen  w-48">
+    <div class="blockLib border-black border-l h-screen fixed">
       <block-lib-com v-for="(block, index) in blocks" :key="index" :id="'darg' + block" draggable="true" @dragstart="startDrag($event)"></block-lib-com>
     </div>
     <!-- <div @drop="drop($event)" @dragover.prevent @dragenter.prevent class="normal"></div>
     <div @drop="drop($event)" @dragover.prevent @dragenter.prevent class="small"></div> -->
-    <div>
-      <div v-for="dropZone in dropZones" :key="dropZone.id" :class="dropZone.type" @drop="drop($event)" @dragleave="dragLeave($event)" @dragover="dragOver($event)" @dragenter=dragEnter($event)></div>
+    <div class="drops">
+      <div class="relative z-0 " v-for="dropZone in dropZones" :key="dropZone.id" :id="'dropZone' + dropZone.id" :class="dropZone.type" @drop="drop($event)" @dragleave="dragLeave($event)" @dragover="dragOver($event)" @dragenter=dragEnter($event)></div>
     </div>
     </div>
 </template>
@@ -20,8 +20,7 @@ export default {
   data(){
     return{
       dropZones:[
-        {type:'small', id:1},
-        {type:'normal', id:2}
+        {type:'normal', id:1},
       ],
       blocks:[
         1,
@@ -31,10 +30,8 @@ export default {
     }
   },
   methods:{
-    startDrag(evt){
-     const dragElement = document.querySelector('.drag');     
+    startDrag(evt){     
       evt.dataTransfer.setData('text/html', evt.target.id)
-      console.log(dragElement, evt.target.id)
       evt.dataTransfer.effectAllowed = "copy";
     },
     dragEnter(evt){
@@ -48,7 +45,7 @@ export default {
       evt.dataTransfer.dropEffect = "copy";
     },
     drop(evt){
-      console.log(evt.target)
+      
       if(evt.target.childElementCount < 1){
         evt.preventDefault()
         const data = evt.dataTransfer.getData('text/html');
@@ -62,11 +59,20 @@ export default {
         nodeCopy.classList.add('editBlock')
         nodeCopy.querySelector('.blockNav').classList.remove('hideNav')
         nodeCopy.querySelector('.blockNav').classList.add('showNav')
+
         nodeCopy.querySelector('.showNav .deleteBtn').addEventListener('click', ()=>{
           nodeCopy.remove()
-          console.log(nodeCopy)
+          let check = evt.target.id.replace(/\D/g,'')
+          console.log(check == this.dropZones.length - 1)
+          if(this.dropZones.length > 0  ){
+            if(check == this.dropZones.length -1){
+            this.dropZones.pop()
+          }
+          }
         })
-     
+        let nextDrop = this.dropZones.length
+        const newDrop = {type: 'normal', id:nextDrop +1}
+        this.dropZones.push(newDrop)
         evt.target.appendChild(nodeCopy)
         evt.target.classList.remove('showDrop')
     }
@@ -80,24 +86,27 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.blockLib{
+  z-index: 5;
+  width: 10%;
+}
 .home{
 display: flex;
 flex-direction: row-reverse;
+width: 100vw;
+overflow-x: hidden;
 }
 .drops{
-  position: relative;
-  overflow: hidden;
+  width: 91%;
+
 }
 .normal{
-  width: 100vw;
+  width: 99%;
   height: 400px;
+  max-height: fit-content;
   position: relative;
-}
-.small{
-  width: 100vw;
-  height: 200px;
-  position: relative;
-
+  transform: translateX(-10%);
+  overflow-x: hidden;
 }
 .showDrop{
   border: dashed rgba($color: #000000, $alpha: 0.8) 1px;
