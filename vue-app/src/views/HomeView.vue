@@ -1,12 +1,12 @@
 <template>
   <div class="home">
     <div class="blockLib border-black border-l h-screen  w-48">
-      <block-lib-com v-for="(block, index) in blocks" :key="index" :id="'darg' + block" @dragstart="startDrag($event)"></block-lib-com>
+      <block-lib-com v-for="(block, index) in blocks" :key="index" :id="'darg' + block" draggable="true" @dragstart="startDrag($event)"></block-lib-com>
     </div>
     <!-- <div @drop="drop($event)" @dragover.prevent @dragenter.prevent class="normal"></div>
     <div @drop="drop($event)" @dragover.prevent @dragenter.prevent class="small"></div> -->
     <div>
-      <div class=" z-10" v-for="dropZone in dropZones" :key="dropZone.id" :class="dropZone.type" @drop="drop($event)" @dragleave="dragLeave($event)" @dragover.prevent @dragenter=dragEnter($event)></div>
+      <div v-for="dropZone in dropZones" :key="dropZone.id" :class="dropZone.type" @drop="drop($event)" @dragleave="dragLeave($event)" @dragover="dragOver($event)" @dragenter=dragEnter($event)></div>
     </div>
     </div>
 </template>
@@ -26,7 +26,8 @@ export default {
       blocks:[
         1,
         2,
-      ]
+      ],
+      count:0
     }
   },
   methods:{
@@ -34,6 +35,7 @@ export default {
      const dragElement = document.querySelector('.drag');     
       evt.dataTransfer.setData('text/html', evt.target.id)
       console.log(dragElement, evt.target.id)
+      evt.dataTransfer.effectAllowed = "copy";
     },
     dragEnter(evt){
       evt.target.classList.add('showDrop')
@@ -41,19 +43,38 @@ export default {
     dragLeave(evt){
       evt.target.classList.remove('showDrop')
     },
+    dragOver(evt){
+      evt.preventDefault();
+      evt.dataTransfer.dropEffect = "copy";
+    },
     drop(evt){
-      evt.preventDefault()
-      const data = evt.dataTransfer.getData('text/html');
-      const dragElement = document.querySelector('.drag');
-      dragElement.classList.remove('libBlock')
-      dragElement.classList.add('editBlock')
-      console.log(data, evt.target)
-      evt.target.appendChild(document.getElementById(data))
-      evt.target.classList.remove('showDrop')
+      console.log(evt.target)
+      if(evt.target.childElementCount < 1){
+        evt.preventDefault()
+        const data = evt.dataTransfer.getData('text/html');
+        
+        if(data.startsWith('dragged')|| !data){
+          return;
+        }
+        const nodeCopy = document.getElementById(data).cloneNode(true);
+        nodeCopy.id = 'dragged' + data + this.count++;
+        nodeCopy.classList.remove('libBlock')
+        nodeCopy.classList.add('editBlock')
+        nodeCopy.querySelector('.blockNav').classList.remove('hideNav')
+        nodeCopy.querySelector('.blockNav').classList.add('showNav')
+        nodeCopy.querySelector('.showNav .deleteBtn').addEventListener('click', ()=>{
+          nodeCopy.remove()
+          console.log(nodeCopy)
+        })
+     
+        evt.target.appendChild(nodeCopy)
+        evt.target.classList.remove('showDrop')
+    }
     },
     showDrop(evt){
       evt.target.classList.add('.showDrop')
-    }
+    },
+
   }
 }
 </script>
@@ -65,20 +86,17 @@ flex-direction: row-reverse;
 }
 .drops{
   position: relative;
-  z-index: -1;
   overflow: hidden;
 }
 .normal{
   width: 100vw;
   height: 400px;
   position: relative;
-  z-index: 99;
 }
 .small{
   width: 100vw;
   height: 200px;
   position: relative;
-  z-index: 99;
 
 }
 .showDrop{
