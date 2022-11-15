@@ -6,7 +6,7 @@
     <!-- <div @drop="drop($event)" @dragover.prevent @dragenter.prevent class="normal"></div>
     <div @drop="drop($event)" @dragover.prevent @dragenter.prevent class="small"></div> -->
     <div class="drops">
-      <div class="relative z-0 " v-for="dropZone in dropZones" :key="dropZone.id" :id="'dropZone' + dropZone.id" :class="dropZone.type" @drop="drop($event)" @dragleave="dragLeave($event)" @dragover="dragOver($event)" @dragenter=dragEnter($event)></div>
+      <div class="relative z-0 " v-for="dropZone in dropZones" :key="dropZone.id" :id="'dropZone' + dropZone.id" :class="dropZone.type" @drop="drop($event), dropZone.hasBlock = true" @dragleave="dragLeave($event)" @dragover="dragOver($event)" @dragenter=dragEnter($event)></div>
     </div>
     </div>
 </template>
@@ -20,7 +20,7 @@ export default {
   data(){
     return{
       dropZones:[
-        {type:'normal', id:1},
+        {type:'normal', id:1, hasBlock:false},
       ],
       blocks:[
         1,
@@ -63,18 +63,21 @@ export default {
         nodeCopy.querySelector('.showNav .deleteBtn').addEventListener('click', ()=>{
           nodeCopy.remove()
           let check = evt.target.id.replace(/\D/g,'')
-          console.log(check == this.dropZones.length - 1)
-          if(this.dropZones.length > 0  ){
-            if(check == this.dropZones.length -1){
-            this.dropZones.pop()
+
+          this.dropZones.forEach(zone=>{
+            if(zone.id == check){
+              zone.hasBlock = false
+            }
+          })
+            if(this.dropZones.length == check ){
+            this.dropZones = this.dropZones.filter(zone => zone.hasBlock == true)
           }
-          }
-        })
-        let nextDrop = this.dropZones.length
-        const newDrop = {type: 'normal', id:nextDrop +1}
-        this.dropZones.push(newDrop)
-        evt.target.appendChild(nodeCopy)
-        evt.target.classList.remove('showDrop')
+          })
+          let nextDrop = this.dropZones.length
+          const newDrop = {type: 'normal', id:nextDrop +1, hasBlock:false}
+          this.dropZones.push(newDrop)
+          evt.target.appendChild(nodeCopy)
+          evt.target.classList.remove('showDrop')
     }
     },
     showDrop(evt){
