@@ -3,7 +3,7 @@
         <div class="blockNav hideNav" > 
           <i class="deleteBtn fa-solid fa-xmark"></i>
         </div>
-        <div class="header w-full bg-red-600 h-6"></div>
+        <div class="header w-full  h-6" :class="color"></div>
         <p >test test test test test</p>
         <div class="footer w-full bg-slate-800 h-6"></div>
     </div>
@@ -13,6 +13,7 @@
 export default {
   props:{
     id:String,
+    color:String
   },
   methods:{
   }
