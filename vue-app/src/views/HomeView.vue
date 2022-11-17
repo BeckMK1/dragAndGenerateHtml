@@ -70,16 +70,17 @@ export default {
             this.dropZones = this.dropZones.filter(zone => zone.hasBlock == true )
           }
           })
+          if(evt.currentTarget.childElementCount == 1){
+            evt.currentTarget.replaceChild(nodeCopy, evt.target)
+            
+          }
+          if(evt.target.childElementCount < 1){
           let nextDrop = this.dropZones.length
           const newDrop = {type: 'normal', id:nextDrop +1, hasBlock:false}
           this.dropZones.push(newDrop)
           evt.target.appendChild(nodeCopy)
           evt.target.classList.remove('showDrop')
-          if(evt.currentTarget.childElementCount == 1){
-            console.log('replace')
-            evt.currentTarget.replaceChild(nodeCopy, evt.target)
-          }
-
+        }
     }
     },
     showDrop(evt){
