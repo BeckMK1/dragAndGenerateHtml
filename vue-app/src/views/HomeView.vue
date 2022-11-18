@@ -44,7 +44,6 @@ export default {
       evt.preventDefault();
       evt.dataTransfer.dropEffect = "copy";
     },
-  
     drop(evt){
         evt.preventDefault()
         const data = evt.dataTransfer.getData('text/html');
@@ -52,39 +51,47 @@ export default {
           return;
         }
         const nodeCopy = document.getElementById(data).cloneNode(true);
-        nodeCopy.id = 'dragged' + data + this.count++;
-        nodeCopy.classList.remove('libBlock')
-        nodeCopy.classList.add('editBlock')
-        nodeCopy.querySelector('.blockNav').classList.remove('hideNav')
-        nodeCopy.querySelector('.blockNav').classList.add('showNav')
-        nodeCopy.querySelector('.showNav .deleteBtn').addEventListener('click', ()=>{
-          nodeCopy.remove()
-          let check = evt.target.id.replace(/\D/g,'')
-
-          this.dropZones.forEach(zone=>{
-            if(zone.id == check){
-              zone.hasBlock = false
+          nodeCopy.id = 'dragged' + data + this.count++;
+          nodeCopy.classList.remove('libBlock')
+          nodeCopy.classList.add('editBlock')
+          nodeCopy.querySelector('.blockNav').classList.remove('hideNav')
+          nodeCopy.querySelector('.blockNav').classList.add('showNav')
+          nodeCopy.querySelector('.showNav .deleteBtn').addEventListener('click', ()=>{
+            nodeCopy.remove()
+            let check = evt.target.id.replace(/\D/g,'')
+            this.dropZones.forEach(zone=>{
+              if(zone.id == check){
+                zone.hasBlock = false
+              }
+            })
+            if(this.dropZones.length > 3){
+              this.dropZones = this.dropZones.filter(zone => zone.hasBlock == true )
             }
-          })
-          if(this.dropZones.length > 2){
-            this.dropZones = this.dropZones.filter(zone => zone.hasBlock == true )
-          }
           })
           if(evt.currentTarget.childElementCount == 1){
             evt.currentTarget.replaceChild(nodeCopy, evt.target)
-            
           }
           if(evt.target.childElementCount < 1){
-          let nextDrop = this.dropZones.length
-          const newDrop = {type: 'normal', id:nextDrop +1, hasBlock:false}
-          this.dropZones.push(newDrop)
-          evt.target.appendChild(nodeCopy)
-          evt.target.classList.remove('showDrop')
+            let nextDrop = this.dropZones.length
+            const newDrop = {type: 'normal', id:nextDrop +1, hasBlock:false}
+            this.dropZones.push(newDrop)
+            evt.target.appendChild(nodeCopy)
+            evt.target.classList.remove('showDrop')
         }
-    }
+        nodeCopy.querySelector('.showNav .upBtn').addEventListener('click', ()=>{
+          const currentElement = evt.target.firstChild
+          const currentZone = evt.target
+          const currentZoneNumber = Number(currentZone.id.replace(/\D/g,'')) - 1
+          const allZone = currentZone.id.replace(/[0-9]/g, '')
+          const nextZone = allZone + currentZoneNumber 
+          const nextElement = document.getElementById(nextZone).firstChild
+            console.log(nextElement)
+          document.getElementById(nextZone).replaceChild(currentElement, nextElement)
+          })
     },
     showDrop(evt){
       evt.target.classList.add('.showDrop')
+    },
     },
   }
 

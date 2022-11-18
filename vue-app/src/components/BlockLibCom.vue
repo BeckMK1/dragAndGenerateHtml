@@ -2,6 +2,7 @@
     <div class="block1 libBlock w-screen h-full bg-black ml-auto mr-auto drag" draggable="true" :id="id">
         <div class="blockNav hideNav" > 
           <i class="deleteBtn fa-solid fa-xmark"></i>
+          <i class="upBtn fa-solid fa-angle-up"></i>
         </div>
         <div class="header w-full  h-6" :class="color"></div>
         <p >test test test test test</p>
